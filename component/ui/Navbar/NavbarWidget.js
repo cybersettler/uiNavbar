@@ -8,7 +8,33 @@ function NavbarWidget(view, scope) {
 }
 
 NavbarWidget.prototype.render = function() {
-    this.navbar.innerHTML = this.template();
+    return this.fetchData()
+        .then(function(widget) {
+            widget.navbar.innerHTML = this.template({
+                model: widget.model
+            });
+        });
+};
+
+FormWidget.prototype.render = function() {
+    return this.fetchData().then(FormFieldService.renderFields);
+};
+
+FormWidget.prototype.fetchData = function() {
+    var promises = [];
+    var widget = this;
+
+    if (this.view.hasAttribute('data-model')) {
+        promises.push(
+            this.scope.getModel().then(function(result) {
+                widget.model = result;
+            })
+        );
+    }
+
+    return Promise.all(promises).then(function() {
+        return widget;
+    });
 };
 
 module.exports = NavbarWidget;
