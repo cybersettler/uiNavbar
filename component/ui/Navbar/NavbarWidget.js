@@ -16,11 +16,7 @@ NavbarWidget.prototype.render = function() {
         });
 };
 
-FormWidget.prototype.render = function() {
-    return this.fetchData().then(FormFieldService.renderFields);
-};
-
-FormWidget.prototype.fetchData = function() {
+NavbarWidget.prototype.fetchData = function() {
     var promises = [];
     var widget = this;
 
