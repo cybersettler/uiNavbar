@@ -10,7 +10,7 @@ function NavbarWidget(view, scope) {
 NavbarWidget.prototype.render = function() {
     return this.fetchData()
         .then(function(widget) {
-            widget.navbar.innerHTML = this.template({
+            widget.navbar.innerHTML = widget.template({
                 model: widget.model
             });
         });

@@ -5,6 +5,13 @@ function NavbarController(view, scope) {
     var controller = this;
 
     scope.onAttached.then(function() {
+
+        var bindingAttributes = [];
+        if (view.hasAttribute('data-model')) {
+            bindingAttributes.push('model');
+        }
+        scope.bindAttributes(bindingAttributes);
+
         controller.navbarWidget = new NavbarWidget(view, scope);
         controller.navbarWidget.render();
     });
