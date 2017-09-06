@@ -242,6 +242,7 @@
     line-height: @line-height-computed;
   }
 
+  /* Moved to dropdown component style
   @media (max-width: @grid-float-breakpoint-max) {
     // Dropdowns get custom display when collapsed
     .open .dropdown-menu {
@@ -264,7 +265,7 @@
         }
       }
     }
-  }
+  } */
 
   // Uncollapse the nav
   @media (min-width: @grid-float-breakpoint) {
@@ -328,10 +329,11 @@
 // Dropdown menus
 
 // Menu position and menu carets
+/* Moved to dropdown style
 .navbar-nav > li > .dropdown-menu {
   margin-top: 0;
   .border-top-radius(0);
-}
+} */
 // Menu position and menu caret support for dropups via extra dropup class
 .navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
   margin-bottom: 0;
@@ -458,6 +460,7 @@
   }
 
   // Dropdown menu items
+  /* Moved to dropdown component style
   .navbar-nav {
     // Remove background color from open dropdown
     > .open > a {
@@ -498,7 +501,7 @@
         }
       }
     }
-  }
+  } */
 
 
   // Links in navbars
