@@ -1,18 +1,19 @@
 const Handlebars = require('Handlebars');
+const d3 = require('d3');
+const viewPattern = /^view\/(\w+)/;
 
 function NavbarWidget(view, scope) {
     this.view = view;
     this.scope = scope;
-    this.template = Handlebars.compile(view.innerHTML);
     this.navbar = view.shadowRoot.querySelector('nav>.container-fluid');
 }
 
 NavbarWidget.prototype.render = function() {
     return this.fetchData()
         .then(function(widget) {
-            widget.navbar.innerHTML = widget.template({
-                model: widget.model
-            });
+            renderHeader(widget);
+            renderBody(widget);
+            initializeLinks(widget);
         });
 };
 
@@ -34,5 +35,137 @@ NavbarWidget.prototype.fetchData = function() {
         return widget;
     });
 };
+
+function renderHeader(widget) {
+    var header = widget.navbar.querySelector('.navbar-header');
+    var contentTemplate = widget.view.querySelector('.navbar-header');
+    var template = Handlebars.compile(contentTemplate.innerHTML);
+    var content = template({
+        model: widget.model
+    });
+    // we need a span to be able to collect the content as
+    // a node and then append it as a child to the
+    // header node. The span is not needed for styling purposes
+    // but we cannot append content a text.
+    var contentNode = document.createElement('span');
+    contentNode.innerHTML = content;
+    header.appendChild(contentNode);
+}
+
+function renderBody(widget) {
+
+    var ul = renderNavs(widget);
+    renderNavItems(ul);
+}
+
+function renderNavs(widget) {
+    var body = widget.navbar.querySelector('.navbar-collapse');
+    var data = getBodyData(widget);
+
+    // Update…
+    var ul = d3.select(body)
+        .selectAll("ul")
+        .data(data);
+
+    // Enter…
+    var appended = ul.enter()
+        .append("ul")
+        .attr('class', function(d) {
+            return d.class;
+        });
+
+    // Exit…
+    ul.exit().remove();
+
+    return appended;
+}
+
+function renderNavItems(ul) {
+    var li = ul.selectAll('li')
+        .data(function(d) {
+            return d.items;
+        });
+
+    li.enter()
+        .append('li')
+        .attr('class', function(d) {
+            return d.class;
+        })
+        .html(function(d) {
+            return d.content;
+        });
+
+    li.exit().remove();
+}
+
+function getBodyData(widget) {
+    var uls = widget.view.querySelectorAll('ul.navbar-nav');
+    var data = {
+        model: widget.model
+    };
+
+    return Array.from(uls)
+        .map(addNav);
+    function addNav(ul) {
+        var lis = ul.querySelectorAll('li');
+        return {
+            class: ul.getAttribute('class'),
+            items: Array
+                .from(lis)
+                .map(addItem)
+        }
+    }
+    function addItem(item) {
+
+        var renderItem = Handlebars.compile(item.innerHTML);
+
+        return {
+            class: item.getAttribute('class'),
+            content: renderItem(data)
+        };
+    }
+}
+
+function initializeLinks(widget) {
+    var links = widget.navbar.querySelectorAll('a');
+    Array.from(links)
+        .filter(hasNavigationRef)
+        .forEach(attachEventListener);
+
+    function hasNavigationRef(item) {
+        var href = item.getAttribute('href');
+        return viewPattern.test(href);
+    }
+
+    function attachEventListener(item) {
+        item.addEventListener('click', onClickLink);
+    }
+
+    function onClickLink(e) {
+        e.preventDefault();
+        var a = e.currentTarget;
+        var href = a.getAttribute('href');
+        widget.scope.navigateTo(href);
+        activateLink(href, widget);
+    }
+}
+
+function activateLink(selectedHref, widget) {
+    var links = widget.navbar.querySelectorAll('a');
+    Array.from(links).forEach(setState);
+    function setState(item) {
+        var href = item.getAttribute('href');
+        var li = item.parentNode;
+        if (!(li.tagName &&
+            li.tagName.toLowerCase() === 'li')) {
+            return;
+        }
+        if (selectedHref === href) {
+            li.classList.add('active');
+        } else if (li.classList.contains('active')) {
+            li.classList.remove('active');
+        }
+    }
+}
 
 module.exports = NavbarWidget;
