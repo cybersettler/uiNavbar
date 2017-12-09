@@ -1,4 +1,3 @@
-const Handlebars = require('Handlebars');
 const d3 = require('d3');
 const viewPattern = /^view\/(\w+)/;
 
@@ -39,10 +38,10 @@ NavbarWidget.prototype.fetchData = function() {
 function renderHeader(widget) {
     var header = widget.navbar.querySelector('.navbar-header');
     var contentTemplate = widget.view.querySelector('.navbar-header');
-    var template = Handlebars.compile(contentTemplate.innerHTML);
-    var content = template({
-        model: widget.model
-    });
+    var content = widget.scope.templateEngine.render(contentTemplate.innerHTML, {
+            model: widget.model
+        });
+
     // we need a span to be able to collect the content as
     // a node and then append it as a child to the
     // header node. The span is not needed for styling purposes
@@ -117,11 +116,9 @@ function getBodyData(widget) {
     }
     function addItem(item) {
 
-        var renderItem = Handlebars.compile(item.innerHTML);
-
         return {
             class: item.getAttribute('class'),
-            content: renderItem(data)
+            content: widget.scope.templateEngine.render(item.innerHTML, data)
         };
     }
 }
