@@ -8,12 +8,14 @@ function NavbarWidget(view, scope) {
 }
 
 NavbarWidget.prototype.render = function() {
+    /**
     return this.fetchData()
         .then(function(widget) {
             renderHeader(widget);
             renderBody(widget);
             initializeLinks(widget);
         });
+     **/
 };
 
 NavbarWidget.prototype.fetchData = function() {
@@ -36,19 +38,31 @@ NavbarWidget.prototype.fetchData = function() {
 };
 
 function renderHeader(widget) {
-    var header = widget.navbar.querySelector('.navbar-header');
-    var contentTemplate = widget.view.querySelector('.navbar-header');
-    var content = widget.scope.templateEngine.render(contentTemplate.innerHTML, {
-            model: widget.model
-        });
 
-    // we need a span to be able to collect the content as
-    // a node and then append it as a child to the
-    // header node. The span is not needed for styling purposes
-    // but we cannot append content a text.
-    var contentNode = document.createElement('span');
-    contentNode.innerHTML = content;
-    header.appendChild(contentNode);
+    var contentTemplate = widget.view.querySelector('.navbar-header');
+
+    if (!contentTemplate) {
+        return;
+    }
+
+    let header = widget.navbar.querySelector('.navbar-header');
+    let contentNode = widget.navbar.querySelector('.navbar-header span');
+    let content = widget.scope.templateEngine.render(contentTemplate.innerHTML, {
+        model: widget.model
+    });
+
+    if (contentNode) {
+        contentNode.innerHTML = content;
+    } else {
+        // we need a span to be able to collect the content as
+        // a node and then append it as a child to the
+        // header node. The span is not needed for styling purposes
+        // but we cannot append content a text.
+        contentNode = document.createElement('span');
+        contentNode.innerHTML = content;
+        header.appendChild(contentNode);
+    }
+
 }
 
 function renderBody(widget) {
