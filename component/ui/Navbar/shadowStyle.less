@@ -292,6 +292,10 @@ content[select=".navbar-body"]::content ui-nav {
     }
   }
 
+  content[select=".navbar-body"]::content ui-nav ui-dropdown.open {
+    background-color: @navbar-default-link-active-bg;
+  }
+
   .navbar-text {
     color: @navbar-default-color;
   }
@@ -350,6 +354,10 @@ content[select=".navbar-body"]::content ui-nav {
       color: @navbar-inverse-brand-hover-color;
       background-color: @navbar-inverse-brand-hover-bg;
     }
+  }
+
+  content[select=".navbar-body"]::content ui-nav ui-dropdown.open {
+    background-color: @navbar-inverse-link-active-bg;
   }
 
   .navbar-text {
