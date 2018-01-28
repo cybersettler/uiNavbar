@@ -4,6 +4,12 @@ const viewPattern = /^view\/(\w+)/;
 function NavbarWidget(view, scope) {
     this.view = view;
     this.scope = scope;
+    let toggleButton = view.shadowRoot.querySelector('button.navbar-toggle');
+    let collapse = view.shadowRoot.querySelector('.navbar-collapse');
+    toggleButton.addEventListener('click', function() {
+        toggleButton.classList.toggle('collapsed');
+        collapse.classList.toggle('in');
+    });
     this.navbar = view.shadowRoot.querySelector('nav>.container-fluid');
 }
 
